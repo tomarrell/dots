@@ -49,10 +49,13 @@
   ;; Prevent keymaps from being overridden
   (general-override-mode)
 
-  ;; Git bindings
+  ;; General bindings
   (my-leader-def 'normal
     "SPC" '(execute-extended-command :which-key "M-x")
+  )
 
+  ;; Git bindings
+  (my-leader-def 'normal
     "g" '(:ignore t :which-key "Git")
     "gs" '(magit-status :which-key "git status")
   )
