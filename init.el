@@ -78,6 +78,17 @@
 ;; Counsel installs Swiper as dependency
 (use-package counsel :ensure t)
 
+(use-package projectile :ensure t)
+(use-package counsel-projectile :ensure t)
+
+(use-package solarized-theme :ensure t
+  :config
+  (require 'solarized)
+  (deftheme solarized-light "The light variant of the Solarized colour theme")
+  (create-solarized-theme 'light 'solarized-light)
+  (provide-theme 'solarized-light)
+  (load-theme 'solarized-light t))
+
 
 ;; =============================
 ;; ------  Configuration  ------
@@ -90,3 +101,12 @@
 ;; Set where the custom variables are stored
 (setq custom-file "~/.emacs.d/custom.el")
 (load custom-file)
+
+(setq fill-column 120)
+(setq tab-width 2)
+(setq initial-scratch-message nil)
+(setq inhibit-startup-message t)
+
+;; Disable the toolbar
+(tool-bar-mode -1)
+(scroll-bar-mode -1)
