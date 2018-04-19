@@ -103,16 +103,28 @@
 ;; =============================
 ;; ------  Configuration  ------
 ;; =============================
+(setq evil-want-C-u-scroll t)
+(setq custom-file "~/.emacs.d/custom.el")
+
+;; Set where the custom variables are stored
+(load custom-file)
+
 (require 'which-key)
+(require 'evil)
+(require 'magit)
 (require 'evil-magit)
+
+(define-key evil-normal-state-map (kbd "C-u") 'evil-scroll-up)
+(define-key evil-visual-state-map (kbd "C-u") 'evil-scroll-up)
+(define-key evil-insert-state-map (kbd "C-u")
+  (lambda ()
+    (interactive)
+    (evil-delete (point-at-bol) (point))))
+
 (which-key-mode)
 (evil-mode 1)
 (counsel-mode 1)
 (counsel-projectile-mode 1)
-
-;; Set where the custom variables are stored
-(setq custom-file "~/.emacs.d/custom.el")
-(load custom-file)
 
 (setq fill-column 120)
 (setq tab-width 2)
