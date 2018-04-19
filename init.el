@@ -40,6 +40,7 @@
 
              (general-create-definer my-leader-def
                                      ;; :prefix my-leader
+                                     :keymaps 'override
                                      :prefix "SPC")
 
              (general-create-definer my-local-leader-def
@@ -50,27 +51,31 @@
              (general-override-mode)
 
              ;; General bindings
-             (my-leader-def 'normal
-                            "SPC" '(execute-extended-command :which-key "M-x"))
+             (my-leader-def
+               :states 'normal
+               "SPC" '(execute-extended-command :which-key "M-x"))
 
              ;; Git bindings
-             (my-leader-def 'normal
-                            "g" '(:ignore t :which-key "Git")
-                            "gs" '(magit-status :which-key "git status"))
+             (my-leader-def
+               :states 'normal
+               "g" '(:ignore t :which-key "Git")
+               "gs" '(magit-status :which-key "git status"))
 
              ;; File bindings
-             (my-leader-def 'normal
-                            "f" '(:ignore t :which-key "File")
-                            "ff" '(counsel-find-file :which-key "find file"))
+             (my-leader-def
+               :states 'normal
+               "f" '(:ignore t :which-key "File")
+               "ff" '(counsel-find-file :which-key "find file"))
 
              ;; Project bindings
-             (my-leader-def 'normal
-                            "p" '(:ignore t :which-key "Project")
-                            "pp" '(counsel-projectile-switch-project :which-key "switch project")
-                            "pf" '(counsel-projectile-find-file :which-key "find file")
-                            "pd" '(counsel-projectile-find-dir :which-key "find dir")
-                            "pb" '(projectile-discover-projects-in-directory :which-key "discover projects"))
-)
+             (my-leader-def
+               :states 'normal
+               "p" '(:ignore t :which-key "Project")
+               "pp" '(counsel-projectile-switch-project :which-key "switch project")
+               "pf" '(counsel-projectile-find-file :which-key "find file")
+               "pd" '(counsel-projectile-find-dir :which-key "find dir")
+               "pb" '(projectile-discover-projects-in-directory :which-key "discover projects"))
+             )
 
 ;; Allow up and down in results with Vim keybindings
 (use-package ivy :ensure t
@@ -106,6 +111,9 @@
 (setq evil-want-C-u-scroll t)
 (setq custom-file "~/.emacs.d/custom.el")
 
+;; Open Magit on switch project
+(setq counsel-projectile-switch-project-action #'magit-status)
+
 ;; Set where the custom variables are stored
 (load custom-file)
 
@@ -114,12 +122,13 @@
 (require 'magit)
 (require 'evil-magit)
 
+;; Fix Evil scrolling up keybindings
 (define-key evil-normal-state-map (kbd "C-u") 'evil-scroll-up)
 (define-key evil-visual-state-map (kbd "C-u") 'evil-scroll-up)
 (define-key evil-insert-state-map (kbd "C-u")
-  (lambda ()
-    (interactive)
-    (evil-delete (point-at-bol) (point))))
+            (lambda ()
+              (interactive)
+              (evil-delete (point-at-bol) (point))))
 
 (which-key-mode)
 (evil-mode 1)
