@@ -53,7 +53,13 @@
              ;; General bindings
              (my-leader-def
                :states 'normal
-               "SPC" '(execute-extended-command :which-key "M-x"))
+               "SPC" '(execute-extended-command :which-key "M-x")
+               "TAB" '(previous-buffer :which-key "TAB"))
+
+             (my-leader-def
+               :states 'normal
+               "b" '(:ignore t :which-key "Buffer")
+               "bk" '(kill-buffer :which-key "kill buffer"))
 
              ;; Git bindings
              (my-leader-def
@@ -74,8 +80,7 @@
                "pp" '(counsel-projectile-switch-project :which-key "switch project")
                "pf" '(counsel-projectile-find-file :which-key "find file")
                "pd" '(counsel-projectile-find-dir :which-key "find dir")
-               "pb" '(projectile-discover-projects-in-directory :which-key "discover projects"))
-             )
+               "pb" '(projectile-discover-projects-in-directory :which-key "discover projects")))
 
 ;; Allow up and down in results with Vim keybindings
 (use-package ivy :ensure t
@@ -94,6 +99,7 @@
 ;; Magit, Git porcelain
 (use-package magit :ensure t)
 (use-package evil-magit :ensure t)
+(use-package git-timemachine :ensure t)
 
 ;; Theme install
 (use-package solarized-theme :ensure t
@@ -136,10 +142,22 @@
 (counsel-projectile-mode 1)
 
 (setq fill-column 120)
-(setq tab-width 2)
+(setq-default tab-width 2)
+(setq c-basic-offset 2)
 (setq initial-scratch-message nil)
 (setq inhibit-startup-message t)
 
 ;; Disable the toolbar
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
+
+;; Fetch path from shell and set as Emacs path
+(defun set-exec-path-from-shell-PATH ()
+  "Set up Emacs' `exec-path' and PATH environment variable to match that used by the user's shell.
+	 This is particularly useful under Mac OSX, where GUI apps are not started from a shell."
+  (interactive)
+  (let ((path-from-shell (replace-regexp-in-string "[ \t\n]*$" "" (shell-command-to-string "$SHELL --login -i -c 'echo $PATH'"))))
+    (setenv "PATH" path-from-shell)
+    (setq exec-path (split-string path-from-shell path-separator))))
+
+(set-exec-path-from-shell-PATH)
