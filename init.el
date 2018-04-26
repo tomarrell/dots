@@ -40,6 +40,7 @@
 
              (general-create-definer my-leader-def
                                      ;; :prefix my-leader
+                                     :states '(normal visual)
                                      :keymaps 'override
                                      :prefix "SPC")
 
@@ -52,30 +53,30 @@
 
              ;; General bindings
              (my-leader-def
-               :states 'normal
                "SPC" '(execute-extended-command :which-key "M-x")
                "TAB" '(previous-buffer :which-key "TAB"))
 
              (my-leader-def
-               :states 'normal
                "b" '(:ignore t :which-key "Buffer")
                "bk" '(kill-buffer :which-key "kill buffer"))
 
              ;; Git bindings
              (my-leader-def
-               :states 'normal
                "g" '(:ignore t :which-key "Git")
                "gs" '(magit-status :which-key "git status"))
 
              ;; File bindings
              (my-leader-def
-               :states 'normal
                "f" '(:ignore t :which-key "File")
                "ff" '(counsel-find-file :which-key "find file"))
 
+						 ;; Ag bindings
+						 (my-leader-def
+							 "s" '(:ignore t :which-key "Search")
+							 "sp" '(counsel-projectile-rg :which-key "Grep Project"))
+
              ;; Project bindings
              (my-leader-def
-               :states 'normal
                "p" '(:ignore t :which-key "Project")
                "pp" '(counsel-projectile-switch-project :which-key "switch project")
                "pf" '(counsel-projectile-find-file :which-key "find file")
@@ -100,6 +101,9 @@
 (use-package magit :ensure t)
 (use-package evil-magit :ensure t)
 (use-package git-timemachine :ensure t)
+
+;; JS Syntax Highlighting
+(use-package web-mode :ensure t)
 
 ;; Theme install
 (use-package solarized-theme :ensure t
@@ -152,6 +156,7 @@
 (scroll-bar-mode -1)
 
 ;; Fetch path from shell and set as Emacs path
+;; Used to make sure 'rg' and 'ag' are accessible to Emacs
 (defun set-exec-path-from-shell-PATH ()
   "Set up Emacs' `exec-path' and PATH environment variable to match that used by the user's shell.
 	 This is particularly useful under Mac OSX, where GUI apps are not started from a shell."
@@ -161,3 +166,39 @@
     (setq exec-path (split-string path-from-shell path-separator))))
 
 (set-exec-path-from-shell-PATH)
+
+;; Enable web mode in .js files
+(add-to-list 'auto-mode-alist '("\\.js\\'". web-mode))
+
+;; Setup indentation
+;; 2 spaces
+(defun my-setup-indent (n)
+  ;; java/c/c++
+  (setq-local c-basic-offset n)
+  ;; web development
+  (setq evil-shift-width n)
+  (setq-local coffee-tab-width n) ; coffeescript
+  (setq-local javascript-indent-level n) ; javascript-mode
+  (setq-local js-indent-level n) ; js-mode
+  (setq-local js2-basic-offset n) ; js2-mode, in latest js2-mode, it's alias of js-indent-level
+  (setq-local web-mode-markup-indent-offset n) ; web-mode, html tag in html file
+  (setq-local web-mode-css-indent-offset n) ; web-mode, css in html file
+  (setq-local web-mode-code-indent-offset n) ; web-mode, js code in html file
+  (setq-local css-indent-offset n)) ; css-mode
+
+(defun my-personal-code-style ()
+  (interactive)
+  (message "My personal code style!")
+  ;; use space instead of tab
+  (setq indent-tabs-mode nil)
+  ;; indent 2 spaces width
+  (my-setup-indent 2))
+
+(defun my-setup-develop-environment ()
+  (interactive)
+  (my-personal-code-style))
+
+;; prog-mode-hook requires emacs24+
+(add-hook 'prog-mode-hook 'my-setup-develop-environment)
+;; a few major-modes does NOT inherited from prog-mode
+(add-hook 'web-mode-hook 'my-setup-develop-environment)
