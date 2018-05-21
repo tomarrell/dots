@@ -105,6 +105,9 @@
 ;; JS Syntax Highlighting
 (use-package web-mode :ensure t)
 
+;; Scala Mode
+(use-package ensime :ensure t)
+
 ;; Theme install
 (use-package solarized-theme :ensure t
              :config
@@ -139,6 +142,12 @@
             (lambda ()
               (interactive)
               (evil-delete (point-at-bol) (point))))
+
+;; Fix keymap for changing windows while holding CTRL
+(define-key evil-window-map "\C-h" 'evil-window-left)
+(define-key evil-window-map "\C-j" 'evil-window-down)
+(define-key evil-window-map "\C-k" 'evil-window-up)
+(define-key evil-window-map "\C-l" 'evil-window-right)
 
 (which-key-mode)
 (evil-mode 1)
