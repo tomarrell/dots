@@ -21,11 +21,15 @@
 (eval-when-compile
   (require 'use-package))
 
+;; Disable the bloody annoying bell
+(setq ring-bell-function 'ignore)
+
 ;; =============================
 ;; ------     Plugins     ------
 ;; =============================
 
 (use-package evil :ensure t)
+
 (use-package which-key :ensure t)
 (use-package general :ensure t
              :config
@@ -104,9 +108,6 @@
 
 ;; JS Syntax Highlighting
 (use-package web-mode :ensure t)
-
-;; Scala Mode
-(use-package ensime :ensure t)
 
 ;; Theme install
 (use-package solarized-theme :ensure t
