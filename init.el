@@ -1,4 +1,4 @@
-;; Personal Emacs Configuration
+;;; My Personal Emacs Configuration
 
 ;;; Author: Tom Arrell <https://github.com/tomarrell>
 ;;; Inspired by https://sam217pa.github.io/2016/08/30/how-to-make-your-own-spacemacs/
@@ -6,6 +6,7 @@
 ;; Use-package bootstrapping
 ;;; + adding MELPA package archive
 (require 'package)
+
 (setq package-enable-at-startup nil)
 (add-to-list 'package-archives
              '("melpa" . "https://melpa.org/packages/"))
@@ -21,83 +22,108 @@
 (eval-when-compile
   (require 'use-package))
 
-;; Disable the bloody annoying bell
-(setq ring-bell-function 'ignore)
+;; Enable Evil scroll up
+;; Must be before (require 'evil)
+(setq evil-want-C-u-scroll t)
 
 ;; =============================
 ;; ------     Plugins     ------
 ;; =============================
 
-(use-package evil :ensure t)
+;; Vim keybindings
+(use-package evil
+  :ensure t
+  :init
+  (setq evil-want-integration t) ;; This is optional since it's already set to t by default.
+  (setq evil-want-keybinding nil)
+  :config
+  (evil-mode 1))
 
+;; Evil bindings collection across wider Emacs
+(use-package evil-collection
+  :after evil
+  :ensure t
+  :config
+  (evil-collection-init))
+
+;; Key binding explanation popup
 (use-package which-key :ensure t)
-(use-package general :ensure t
-             :config
-             (general-evil-setup t)
 
-             ;; * Prefix Keybindings
-             ;; :prefix can be used to prevent redundant specification of prefix keys
-             ;; again, variables are not necessary and likely not useful if you are only
-             ;; using a definer created with `general-create-definer' for the prefixes
-             ;; (defconst my-leader "SPC")
-             ;; (defconst my-local-leader "SPC m")
+;; Key bindings
+(use-package general
+  :ensure t
+  :config
+  (general-evil-setup t)
 
-             (general-create-definer my-leader-def
-                                     ;; :prefix my-leader
-                                     :states '(normal visual)
-                                     :keymaps 'override
-                                     :prefix "SPC")
+  (general-create-definer my-leader-def
+    :states '(normal visual)
+    :keymaps 'override
+    :prefix "SPC")
 
-             (general-create-definer my-local-leader-def
-                                     ;; :prefix my-local-leader
-                                     :prefix "SPC m")
+  (general-create-definer my-local-leader-def
+    :prefix "SPC m")
 
-             ;; Prevent keymaps from being overridden
-             (general-override-mode)
+  ;; Prevent keymaps from being overridden
+  (general-override-mode)
 
-             ;; General bindings
-             (my-leader-def
-               "SPC" '(execute-extended-command :which-key "M-x")
-               "TAB" '(previous-buffer :which-key "TAB"))
+  ;; General bindings
+  (my-leader-def
+    "SPC" '(execute-extended-command :wk "Command Search")
+    "TAB" '(previous-buffer :wk "Previous Buffer"))
 
-             (my-leader-def
-               "b" '(:ignore t :which-key "Buffer")
-               "bk" '(kill-buffer :which-key "kill buffer"))
+  ;; Help bindings
+  (my-leader-def
+    "h" '(:ignore t :wk "Buffer")
+    "hm" '(:wk "Kill"))
 
-             ;; Git bindings
-             (my-leader-def
-               "g" '(:ignore t :which-key "Git")
-               "gs" '(magit-status :which-key "git status"))
+  ;; Buffer bindings
+  (my-leader-def
+    "b" '(:ignore t :wk "Buffer")
+    "bk" '(kill-buffer :wk "Kill"))
 
-             ;; File bindings
-             (my-leader-def
-               "f" '(:ignore t :which-key "File")
-               "ff" '(counsel-find-file :which-key "find file"))
+  ;; Git bindings
+  (my-leader-def
+    "g" '(:ignore t :wk "Git")
+    "gs" '(magit-status :wk "Status"))
 
-						 ;; Ag bindings
-						 (my-leader-def
-							 "s" '(:ignore t :which-key "Search")
-							 "sp" '(counsel-projectile-rg :which-key "Grep Project"))
+  ;; Flycheck error bindings
+  (my-leader-def
+    "e" '(:ignore t :wk "Error (Flycheck)")
+    "ec" '(flycheck-clear :wk "Clear")
+    "ev" '(flycheck-verify-setup :wk "Verify Setup")
+    "ee" '(flycheck-buffer :wk "Check"))
 
-             ;; Project bindings
-             (my-leader-def
-               "p" '(:ignore t :which-key "Project")
-               "pp" '(counsel-projectile-switch-project :which-key "switch project")
-               "pf" '(counsel-projectile-find-file :which-key "find file")
-               "pd" '(counsel-projectile-find-dir :which-key "find dir")
-               "pb" '(projectile-discover-projects-in-directory :which-key "discover projects")))
+  ;; Ag bindings
+  (my-leader-def
+    "s" '(:ignore t :wk "Search")
+    "sp" '(counsel-projectile-rg :wk "Grep Project"))
 
-;; Allow up and down in results with Vim keybindings
-(use-package ivy :ensure t
-             :config
-             (define-key ivy-minibuffer-map (kbd "C-j") #'ivy-next-line)
-             (define-key ivy-minibuffer-map (kbd "C-k") #'ivy-previous-line)
-             (define-key ivy-minibuffer-map (kbd "C-<return>") #'ivy-immediate-done)
-             (define-key ivy-minibuffer-map (kbd "<escape>") 'minibuffer-keyboard-quit))
+  ;; Project bindings
+  (my-leader-def
+    "p" '(:ignore t :wk "Project")
+    "pp" '(counsel-projectile-switch-project :wk "Switch")
+    "pf" '(counsel-projectile-find-file :wk "Find File")
+    "pd" '(counsel-projectile-find-dir :wk "Find Dir")
+    "pb" '(projectile-discover-projects-in-directory :wk "Discover Projects")))
 
+;; Minibuffer for searching etc
+(use-package ivy
+  :ensure t
+  :config
+  ;; Allow up and down in results with Vim keybindings
+  (define-key ivy-minibuffer-map (kbd "C-j") #'ivy-next-line)
+  (define-key ivy-minibuffer-map (kbd "C-k") #'ivy-previous-line)
+  (define-key ivy-minibuffer-map (kbd "C-<return>") #'ivy-immediate-done)
+  (define-key ivy-minibuffer-map (kbd "<escape>") 'minibuffer-keyboard-quit))
+
+;; Generic set of searching functions
 ;; Counsel installs Swiper as dependency
 (use-package counsel :ensure t)
 
+;; Snippet tooling
+(use-package yasnippet :ensure t)
+
+;; Manage projects
 (use-package projectile :ensure t)
 (use-package counsel-projectile :ensure t)
 
@@ -109,40 +135,61 @@
 ;; JS Syntax Highlighting
 (use-package web-mode :ensure t)
 
-;; Theme install
-(use-package solarized-theme :ensure t
-             :config
-             (require 'solarized)
-             (deftheme solarized-light "The light variant of the Solarized colour theme")
-             (create-solarized-theme 'light 'solarized-light)
-             (provide-theme 'solarized-light)
-             (load-theme 'solarized-light t))
+;; In buffer completions framework
+(use-package company :ensure t
+  :config
+  (add-hook 'after-init-hook 'global-company-mode))
 
+(use-package flycheck
+  :ensure t
+  :init (global-flycheck-mode))
+
+;; Elisp formatter
+(use-package elisp-format :ensure t)
+
+;; Rust Language support
+(use-package rust-mode :ensure t)
+(use-package flymake-rust :ensure t)
+(use-package flycheck-rust :ensure t)
+(use-package racer :ensure t)
+(use-package cargo :ensure t
+  :config
+  (add-hook 'rust-mode-hook 'cargo-minor-mode))
+(with-eval-after-load 'rust-mode
+  (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
+
+;; Theme install
+(use-package doom-themes
+  :ensure t
+  :config
+  (load-theme 'doom-nord-light t))
 
 ;; =============================
 ;; ------  Configuration  ------
 ;; =============================
-(setq evil-want-C-u-scroll t)
-(setq custom-file "~/.emacs.d/custom.el")
-
-;; Open Magit on switch project
-(setq counsel-projectile-switch-project-action #'magit-status)
-
-;; Set where the custom variables are stored
-(load custom-file)
-
 (require 'which-key)
 (require 'evil)
 (require 'magit)
 (require 'evil-magit)
 
-;; Fix Evil scrolling up keybindings
-(define-key evil-normal-state-map (kbd "C-u") 'evil-scroll-up)
-(define-key evil-visual-state-map (kbd "C-u") 'evil-scroll-up)
-(define-key evil-insert-state-map (kbd "C-u")
-            (lambda ()
-              (interactive)
-              (evil-delete (point-at-bol) (point))))
+;; Set where the custom variables are stored
+(setq custom-file "~/.emacs.d/custom.el")
+(load custom-file)
+
+;; Open Magit on switch project and remove all other panes
+(setq counsel-projectile-switch-project-action
+  '(lambda (x)
+     (magit-status x)
+     (delete-other-windows)
+     (message "Opening %s" x)))
+
+;; Sort out ESC being able to quit command
+(global-set-key (kbd "<escape>") 'keyboard-escape-quit)
+
+;; Smooth scrolling
+(setq scroll-step 1)
+(setq scroll-conservatively 10000)
+(setq auto-window-vscroll nil)
 
 ;; Fix keymap for changing windows while holding CTRL
 (define-key evil-window-map "\C-h" 'evil-window-left)
@@ -150,14 +197,20 @@
 (define-key evil-window-map "\C-k" 'evil-window-up)
 (define-key evil-window-map "\C-l" 'evil-window-right)
 
-(which-key-mode)
-(evil-mode 1)
-(counsel-mode 1)
-(counsel-projectile-mode 1)
+;; Open maximised
+(add-to-list 'default-frame-alist '(fullscreen . maximized))
 
+;; Disable the bloody annoying bell
+(setq ring-bell-function 'ignore)
+
+;; Enable which key info
+(which-key-mode)
+(counsel-mode)
+(counsel-projectile-mode)
+(global-display-line-numbers-mode)
+
+;; Set wrap point
 (setq fill-column 120)
-(setq-default tab-width 2)
-(setq c-basic-offset 2)
 (setq initial-scratch-message nil)
 (setq inhibit-startup-message t)
 
@@ -165,50 +218,15 @@
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
 
+;; Enable web mode in .js files
+(add-to-list 'auto-mode-alist '("\\.js\\'". web-mode))
+
 ;; Fetch path from shell and set as Emacs path
 ;; Used to make sure 'rg' and 'ag' are accessible to Emacs
 (defun set-exec-path-from-shell-PATH ()
-  "Set up Emacs' `exec-path' and PATH environment variable to match that used by the user's shell.
-	 This is particularly useful under Mac OSX, where GUI apps are not started from a shell."
-  (interactive)
+  "Set path for Emacs executed from command line."
   (let ((path-from-shell (replace-regexp-in-string "[ \t\n]*$" "" (shell-command-to-string "$SHELL --login -i -c 'echo $PATH'"))))
     (setenv "PATH" path-from-shell)
     (setq exec-path (split-string path-from-shell path-separator))))
 
 (set-exec-path-from-shell-PATH)
-
-;; Enable web mode in .js files
-(add-to-list 'auto-mode-alist '("\\.js\\'". web-mode))
-
-;; Setup indentation
-;; 2 spaces
-(defun my-setup-indent (n)
-  ;; java/c/c++
-  (setq-local c-basic-offset n)
-  ;; web development
-  (setq evil-shift-width n)
-  (setq-local coffee-tab-width n) ; coffeescript
-  (setq-local javascript-indent-level n) ; javascript-mode
-  (setq-local js-indent-level n) ; js-mode
-  (setq-local js2-basic-offset n) ; js2-mode, in latest js2-mode, it's alias of js-indent-level
-  (setq-local web-mode-markup-indent-offset n) ; web-mode, html tag in html file
-  (setq-local web-mode-css-indent-offset n) ; web-mode, css in html file
-  (setq-local web-mode-code-indent-offset n) ; web-mode, js code in html file
-  (setq-local css-indent-offset n)) ; css-mode
-
-(defun my-personal-code-style ()
-  (interactive)
-  (message "My personal code style!")
-  ;; use space instead of tab
-  (setq indent-tabs-mode nil)
-  ;; indent 2 spaces width
-  (my-setup-indent 2))
-
-(defun my-setup-develop-environment ()
-  (interactive)
-  (my-personal-code-style))
-
-;; prog-mode-hook requires emacs24+
-(add-hook 'prog-mode-hook 'my-setup-develop-environment)
-;; a few major-modes does NOT inherited from prog-mode
-(add-hook 'web-mode-hook 'my-setup-develop-environment)
