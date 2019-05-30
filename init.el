@@ -152,6 +152,15 @@
 ;; Elisp formatter
 (use-package elisp-format :ensure t)
 
+;; Support for Markdown editing
+(use-package markdown-mode
+  :ensure t
+  :commands (markdown-mode gfm-mode)
+  :mode (("README\\.md\\'" . gfm-mode)
+         ("\\.md\\'" . markdown-mode)
+         ("\\.markdown\\'" . markdown-mode))
+  :init (setq markdown-command "multimarkdown"))
+
 ;; Rust Language support
 (use-package rust-mode :ensure t)
 (use-package flymake-rust :ensure t)
