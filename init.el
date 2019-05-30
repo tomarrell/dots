@@ -9,7 +9,7 @@
 
 (setq package-enable-at-startup nil)
 (add-to-list 'package-archives
-             '("melpa" . "https://melpa.org/packages/"))
+	     '("melpa" . "https://melpa.org/packages/"))
 
 (package-initialize)
 
@@ -47,27 +47,32 @@
   (evil-collection-init))
 
 ;; Key binding explanation popup
-(use-package which-key :ensure t)
+(use-package which-key
+  :ensure t
+  :config
+  (setq which-key-idle-delay 0)
+  (setq which-key-max-display-columns 3)
+  (setq which-key-add-column-padding 5)
+  (which-key-mode))
 
 ;; Key bindings
 (use-package general
   :ensure t
   :config
   (general-evil-setup t)
+  (setq-default evil-escape-key-sequence "ESC")
 
   (general-create-definer my-leader-def
-    :states '(normal visual)
+    :states '(normal visual emacs)
     :keymaps 'override
     :prefix "SPC")
-
-  (general-create-definer my-local-leader-def
-    :prefix "SPC m")
 
   ;; Prevent keymaps from being overridden
   (general-override-mode)
 
   ;; General bindings
   (my-leader-def
+    "ESC" '(keyboard-quit :wk t)
     "SPC" '(execute-extended-command :wk "Command Search")
     "TAB" '(previous-buffer :wk "Previous Buffer"))
 
@@ -164,13 +169,18 @@
   :config
   (load-theme 'doom-nord-light t))
 
+(use-package evil-escape
+  :ensure t
+  :config
+  (evil-escape-mode))
+
 ;; =============================
 ;; ------  Configuration  ------
 ;; =============================
-(require 'which-key)
 (require 'evil)
 (require 'magit)
 (require 'evil-magit)
+(require 'transient)
 
 ;; Set where the custom variables are stored
 (setq custom-file "~/.emacs.d/custom.el")
@@ -178,13 +188,15 @@
 
 ;; Open Magit on switch project and remove all other panes
 (setq counsel-projectile-switch-project-action
-  '(lambda (x)
-     (magit-status x)
-     (delete-other-windows)
-     (message "Opening %s" x)))
+      '(lambda (x)
+	 (magit-status x)
+	 (delete-other-windows)
+	 (message "Opening %s" x)))
 
-;; Sort out ESC being able to quit command
-(global-set-key (kbd "<escape>") 'keyboard-escape-quit)
+;; Fix Magit help popup quit with ESC
+(define-key transient-map        (kbd "<escape>") 'transient-quit-one)
+(define-key transient-edit-map   (kbd "<escape>") 'transient-quit-one)
+(define-key transient-sticky-map (kbd "<escape>") 'transient-quit-seq)
 
 ;; Smooth scrolling
 (setq scroll-step 1)
@@ -204,7 +216,6 @@
 (setq ring-bell-function 'ignore)
 
 ;; Enable which key info
-(which-key-mode)
 (counsel-mode)
 (counsel-projectile-mode)
 (global-display-line-numbers-mode)
