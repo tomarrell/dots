@@ -1,4 +1,8 @@
 .cache
+.local/
+.lsp-session-v1
+srecode-map.el
+transient/
 auto-save-list
 /elpa/
 /projectile-bookmarks.eld
