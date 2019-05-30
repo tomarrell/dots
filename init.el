@@ -62,6 +62,12 @@
   (general-evil-setup t)
   (setq-default evil-escape-key-sequence "ESC")
 
+  (general-define-key
+   :states 'normal
+   :keymap 'override
+    "+" '(enlarge-window-horizontally :wk "+")
+    "-" '(shrink-window-horizontally :wk "-"))
+
   (general-create-definer my-leader-def
     :states '(normal visual emacs)
     :keymaps 'override
@@ -85,6 +91,11 @@
   (my-leader-def
     "b" '(:ignore t :wk "Buffer")
     "bk" '(kill-buffer :wk "Kill"))
+
+  ;; Window bindings
+  (my-leader-def
+    "w" '(:ignore t :wk "Window")
+    "wb" '(balance-windows :wk "Balance"))
 
   ;; Markdown bindings
   (my-leader-def
