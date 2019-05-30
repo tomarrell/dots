@@ -86,6 +86,12 @@
     "b" '(:ignore t :wk "Buffer")
     "bk" '(kill-buffer :wk "Kill"))
 
+  ;; Markdown bindings
+  (my-leader-def
+    "m" '(:ignore t :wk "Markdown")
+    "mf" '(markdown-toggle-markup-hiding :wk "Toggle Formatting")
+    "mi" '(markdown-toggle-inline-images :wk "Toggle Images"))
+
   ;; Git bindings
   (my-leader-def
     "g" '(:ignore t :wk "Git")
@@ -159,7 +165,10 @@
   :mode (("README\\.md\\'" . gfm-mode)
          ("\\.md\\'" . markdown-mode)
          ("\\.markdown\\'" . markdown-mode))
-  :init (setq markdown-command "multimarkdown"))
+  :init
+  (setq markdown-enable-math 1)
+  (setq markdown-display-remote-images 1)
+  (setq markdown-command "pandoc"))
 
 ;; Rust Language support
 (use-package rust-mode :ensure t)
