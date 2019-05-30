@@ -78,8 +78,8 @@
 
   ;; Help bindings
   (my-leader-def
-    "h" '(:ignore t :wk "Buffer")
-    "hm" '(:wk "Kill"))
+    "h" '(:ignore t :wk "Help")
+    "hm" '(describe-mode :wk "Mode"))
 
   ;; Buffer bindings
   (my-leader-def
