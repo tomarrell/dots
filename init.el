@@ -27,14 +27,12 @@
 (setq evil-want-C-u-scroll t)
 
 
-
-
-
 ;;
 ;; =============================
 ;; ------     Plugins     ------
 ;; =============================
 ;;
+
 
 ;; Vim keybindings
 (use-package evil
@@ -231,14 +229,12 @@
   (evil-escape-mode))
 
 
-
-
-
 ;;
 ;; =============================
 ;; ------  Configuration  ------
 ;; =============================
 ;;
+
 
 (require 'evil)
 (require 'magit)
