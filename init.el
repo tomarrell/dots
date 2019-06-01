@@ -26,9 +26,15 @@
 ;; Must be before (require 'evil)
 (setq evil-want-C-u-scroll t)
 
+
+
+
+
+;;
 ;; =============================
 ;; ------     Plugins     ------
 ;; =============================
+;;
 
 ;; Vim keybindings
 (use-package evil
@@ -50,10 +56,15 @@
 (use-package which-key
   :ensure t
   :config
-  (setq which-key-idle-delay 0)
+  (setq which-key-idle-delay 0.2)
   (setq which-key-max-display-columns 3)
   (setq which-key-add-column-padding 5)
   (which-key-mode))
+
+;; Org Mode
+(use-package org
+  :mode (("\\.org$" . org-mode))
+  :ensure t)
 
 ;; Key bindings
 (use-package general
@@ -95,12 +106,14 @@
   ;; Window bindings
   (my-leader-def
     "w" '(:ignore t :wk "Window")
-    "wb" '(balance-windows :wk "Balance"))
+    "wb" '(balance-windows :wk "Balance")
+    "ww" '(toggle-truncate-lines :wk "Toggle Word Wrap"))
 
   ;; Markdown bindings
   (my-leader-def
     "m" '(:ignore t :wk "Markdown")
     "mf" '(markdown-toggle-markup-hiding :wk "Toggle Formatting")
+    "ml" '(markdown-live-preview-mode :wk "Live Preview")
     "mi" '(markdown-toggle-inline-images :wk "Toggle Images"))
 
   ;; Git bindings
@@ -177,9 +190,23 @@
          ("\\.md\\'" . markdown-mode)
          ("\\.markdown\\'" . markdown-mode))
   :init
-  (setq markdown-enable-math 1)
-  (setq markdown-display-remote-images 1)
-  (setq markdown-command "pandoc"))
+  (setq markdown-header-scaling t
+        markdown-hide-urls t
+        markdown-enable-math t
+        markdown-command "pandoc"
+        markdown-display-remote-images t
+        markdown-fontify-code-blocks-natively t)
+  :config
+  (setq markdown-enable-wiki-links t
+        markdown-indent-on-enter 'indent-and-new-item
+        markdown-link-space-sub-char "-"
+        markdown-asymmetric-header t
+        markdown-nested-imenu-heading-index t
+        markdown-max-image-size '(640 . 480)
+        markdown-hr-strings
+        '("------------------------------------------------------------------------------"
+          "*** *** ***"
+          "--- --- ---")))
 
 ;; Rust Language support
 (use-package rust-mode :ensure t)
@@ -196,16 +223,23 @@
 (use-package doom-themes
   :ensure t
   :config
-  (load-theme 'doom-nord-light t))
+  (load-theme 'doom-nord t))
 
 (use-package evil-escape
   :ensure t
   :config
   (evil-escape-mode))
 
+
+
+
+
+;;
 ;; =============================
 ;; ------  Configuration  ------
 ;; =============================
+;;
+
 (require 'evil)
 (require 'magit)
 (require 'evil-magit)
@@ -214,6 +248,9 @@
 ;; Set where the custom variables are stored
 (setq custom-file "~/.emacs.d/custom.el")
 (load custom-file)
+
+;; Translate ESC to C-g
+(define-key key-translation-map (kbd "ESC") (kbd "C-g"))
 
 ;; Open Magit on switch project and remove all other panes
 (setq counsel-projectile-switch-project-action
