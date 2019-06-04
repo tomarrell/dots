@@ -229,11 +229,11 @@
   :config
   (load-theme 'doom-nord t))
 
+;; Evil escaping
 (use-package evil-escape
   :ensure t
   :config
   (evil-escape-mode))
-
 
 ;; LSP Mode
 (use-package lsp-mode
@@ -244,11 +244,17 @@
   :config
   (setq lsp-auto-guess-root t))
 
-;; optionally
 (use-package lsp-ui :ensure t :commands lsp-ui-mode)
 (use-package company-lsp :ensure t :commands company-lsp)
 (use-package helm-lsp :ensure t :commands helm-lsp-workspace-symbol)
 (use-package lsp-treemacs :ensure t :commands lsp-treemacs-errors-list)
+
+;; Sensible SQL indentation
+(use-package sql-indent
+  :ensure t
+  :after sql
+  :config
+  (add-hook 'sql-mode-hook #'sqlind-minor-mode))
 
 ;;
 ;; =============================
@@ -328,8 +334,9 @@
 (add-to-list 'auto-mode-alist '("\\.js\\'". web-mode))
 
 ;; Prevent default to TABS
+(setq-default tab-width 2)
+(setq-default evil-shift-width 2)
 (setq-default indent-tabs-mode nil)
-(setq tab-width 2)
 
 ;; Fetch path from shell and set as Emacs path
 ;; Used to make sure 'rg' and 'ag' are accessible to Emacs
