@@ -26,7 +26,6 @@
 ;; Must be before (require 'evil)
 (setq evil-want-C-u-scroll t)
 
-
 ;;
 ;; =============================
 ;; ------     Plugins     ------
@@ -48,7 +47,8 @@
   :after evil
   :ensure t
   :config
-  (evil-collection-init))
+  (evil-collection-init)
+  (evil-collection-define-key 'normal 'go-mode-map "gd" 'lsp-find-definition))
 
 ;; Key binding explanation popup
 (use-package which-key
@@ -175,7 +175,9 @@
 
 (use-package flycheck
   :ensure t
-  :init (global-flycheck-mode))
+  :init (global-flycheck-mode)
+  :config
+  (setq flycheck-display-errors-delay 0.1))
 
 ;; Elisp formatter
 (use-package elisp-format :ensure t)
@@ -206,7 +208,7 @@
           "*** *** ***"
           "--- --- ---")))
 
-;; Rust Language support
+;; Rust Language Support
 (use-package rust-mode :ensure t)
 (use-package flymake-rust :ensure t)
 (use-package flycheck-rust :ensure t)
@@ -216,6 +218,9 @@
   (add-hook 'rust-mode-hook 'cargo-minor-mode))
 (with-eval-after-load 'rust-mode
   (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
+
+;; Go Language Support
+(use-package go-mode :ensure t)
 
 ;; Theme install
 (use-package doom-themes
@@ -229,21 +234,40 @@
   (evil-escape-mode))
 
 
+;; LSP Mode
+(use-package lsp-mode
+  :ensure t
+  :commands lsp
+  :config
+  (setq lsp-auto-guess-root t))
+
+;; optionally
+(use-package lsp-ui :ensure t :commands lsp-ui-mode)
+(use-package company-lsp :ensure t :commands company-lsp)
+(use-package helm-lsp :ensure t :commands helm-lsp-workspace-symbol)
+(use-package lsp-treemacs :ensure t :commands lsp-treemacs-errors-list)
+
 ;;
 ;; =============================
 ;; ------  Configuration  ------
 ;; =============================
 ;;
 
-
 (require 'evil)
 (require 'magit)
 (require 'evil-magit)
 (require 'transient)
 
+;; Gofmt on save
+(add-to-list 'exec-path "/usr/local/go/bin")
+(add-hook 'before-save-hook 'gofmt-before-save)
+
 ;; Set where the custom variables are stored
 (setq custom-file "~/.emacs.d/custom.el")
 (load custom-file)
+
+;; Move backup files
+(setq backup-directory-alist `(("." . "~/.saves")))
 
 ;; Translate ESC to C-g
 (define-key key-translation-map (kbd "ESC") (kbd "C-g"))
@@ -270,6 +294,12 @@
 (define-key evil-window-map "\C-j" 'evil-window-down)
 (define-key evil-window-map "\C-k" 'evil-window-up)
 (define-key evil-window-map "\C-l" 'evil-window-right)
+
+(define-key evil-window-map "\C-l" 'evil-window-right)
+
+;; Traverse visual lines instead of logical
+(define-key evil-normal-state-map (kbd "j") 'evil-next-visual-line)
+(define-key evil-normal-state-map (kbd "k") 'evil-previous-visual-line)
 
 ;; Open maximised
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
