@@ -336,7 +336,11 @@
 ;; Prevent default to TABS
 (setq-default tab-width 2)
 (setq-default evil-shift-width 2)
+(setq-default evil-shift-round nil)
 (setq-default indent-tabs-mode nil)
+
+;; Font sizing
+(set-face-attribute 'default nil :height 140)
 
 ;; Fetch path from shell and set as Emacs path
 ;; Used to make sure 'rg' and 'ag' are accessible to Emacs
