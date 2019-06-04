@@ -44,9 +44,10 @@
 
 ;; Evil bindings collection across wider Emacs
 (use-package evil-collection
-  :after evil
+  :after (evil lsp-mode)
   :ensure t
   :config
+  (require 'lsp-mode)
   (evil-collection-init)
   (evil-collection-define-key 'normal 'go-mode-map "gd" 'lsp-find-definition))
 
@@ -237,7 +238,9 @@
 ;; LSP Mode
 (use-package lsp-mode
   :ensure t
+  :after go-mode
   :commands lsp
+  :hook (go-mode . lsp)
   :config
   (setq lsp-auto-guess-root t))
 
@@ -323,6 +326,10 @@
 
 ;; Enable web mode in .js files
 (add-to-list 'auto-mode-alist '("\\.js\\'". web-mode))
+
+;; Prevent default to TABS
+(setq-default indent-tabs-mode nil)
+(setq tab-width 2)
 
 ;; Fetch path from shell and set as Emacs path
 ;; Used to make sure 'rg' and 'ag' are accessible to Emacs
