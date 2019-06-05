@@ -210,7 +210,9 @@
           "--- --- ---")))
 
 ;; Rust Language Support
-(use-package rust-mode :ensure t)
+(use-package rust-mode
+  :ensure t
+  :hook (rust-mode . lsp))
 (use-package flymake-rust :ensure t)
 (use-package flycheck-rust :ensure t)
 (use-package racer :ensure t)
@@ -238,10 +240,10 @@
 ;; LSP Mode
 (use-package lsp-mode
   :ensure t
-  :after go-mode
   :commands lsp
   :hook (go-mode . lsp)
   :config
+  (require 'lsp-clients)
   (setq lsp-auto-guess-root t))
 
 (use-package lsp-ui :ensure t :commands lsp-ui-mode)
@@ -325,6 +327,7 @@
 (setq fill-column 120)
 (setq initial-scratch-message nil)
 (setq inhibit-startup-message t)
+(global-visual-line-mode)
 
 ;; Disable the toolbar
 (tool-bar-mode -1)
@@ -338,6 +341,7 @@
 (setq-default evil-shift-width 2)
 (setq-default evil-shift-round nil)
 (setq-default indent-tabs-mode nil)
+
 
 ;; Font sizing
 (set-face-attribute 'default nil :height 140)
