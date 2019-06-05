@@ -341,6 +341,8 @@
 (setq-default evil-shift-round nil)
 (setq-default indent-tabs-mode nil)
 
+;; Disable Flymake mode whenever flycheck starts up
+(add-hook 'flycheck-mode-hook #'flymake-mode-off)
 
 ;; Font sizing
 (set-face-attribute 'default nil :height 140)
